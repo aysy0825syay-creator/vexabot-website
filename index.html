@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VexaBot | 多機能Discord Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0E14;
+    --card: #121623;
+    --card-2: #171C2B;
+    --accent: #5EEAD4;
+    --accent-deep: #2DD4BF;
+    --violet: #818CF8;
+    --ink: #E8EBF3;
+    --ink-soft: #8891A7;
+    --border: rgba(255,255,255,0.08);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#F6F7FB; --card:#FFFFFF; --card-2:#F0F2F8; --ink:#15192B; --ink-soft:#5B6378; --border:rgba(15,18,30,0.08); }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Inter", sans-serif; line-height: 1.6; overflow-x: hidden; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+  a { color: inherit; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--border);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; max-width: 980px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 8px; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.05rem; text-decoration: none; }
+  .brand svg { width: 26px; height: 26px; }
+  .nav-links { display: flex; gap: 20px; font-size: .88rem; color: var(--ink-soft); }
+  .nav-links a { text-decoration: none; }
+  .nav-cta {
+    background: var(--accent); color: #06231E; font-family: "Space Grotesk", sans-serif;
+    font-weight: 600; font-size: .85rem; padding: 9px 16px; border-radius: 9px; text-decoration: none;
+  }
+
+  /* HERO */
+  .hero { padding: 64px 0 48px; text-align: center; }
+  .logo-big { width: 84px; height: 84px; margin: 0 auto 20px; }
+  .hero h1 {
+    font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: clamp(2.1rem, 7vw, 3.1rem);
+    margin: 0 0 12px; letter-spacing: -0.02em;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(135deg, var(--accent), var(--violet));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.tag { font-size: 1.04rem; color: var(--ink-soft); max-width: 46ch; margin: 0 auto 28px; }
+  .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: .98rem; text-decoration: none; padding: 14px 26px; border-radius: 11px; transition: transform .15s ease; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #06231E; box-shadow: 0 10px 22px -8px rgba(94,234,212,.4); }
+  .btn-secondary { background: var(--card); color: var(--ink); border: 1px solid var(--border); }
+
+  section.block { padding: 50px 0; }
+  .eyebrow { text-align: center; font-size: .76rem; letter-spacing: .12em; color: var(--accent); font-weight: 600; text-transform: uppercase; margin: 0 0 8px; }
+  .block h2 { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 1.5rem; text-align: center; margin: 0 0 30px; }
+
+  /* 活動内容スタイルの3カード */
+  .activities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 720px) { .activities { grid-template-columns: 1fr; } }
+  .activity-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .activity-card .ico { font-size: 1.5rem; margin-bottom: 10px; display: block; }
+  .activity-card h3 { font-family: "Space Grotesk", sans-serif; font-size: 1rem; margin: 0 0 6px; }
+  .activity-card p { font-size: .86rem; color: var(--ink-soft); margin: 0 0 12px; }
+  .activity-card .link { font-size: .82rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+
+  /* デモ(チャット風) */
+  .demo { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 22px; display: grid; gap: 14px; }
+  .msg { display: flex; gap: 10px; align-items: flex-start; }
+  .msg .bubble { background: var(--card-2); border-radius: 12px; padding: 10px 14px; font-size: .88rem; max-width: 80%; }
+  .msg.user { flex-direction: row-reverse; }
+  .msg.user .bubble { background: linear-gradient(135deg, rgba(94,234,212,.15), rgba(129,140,248,.15)); }
+  .avatar { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; }
+  .msg .name { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: .78rem; margin-bottom: 3px; color: var(--ink-soft); }
+
+  /* チェックリスト */
+  .checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 24px; }
+  @media (max-width: 560px) { .checklist { grid-template-columns: 1fr; } }
+  .checklist li { list-style: none; display: flex; gap: 8px; font-size: .9rem; color: var(--ink-soft); }
+  .checklist li::before { content: "✓"; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+  /* 機能グリッド */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 460px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .card .dot { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(94,234,212,.18), rgba(129,140,248,.18)); margin-bottom: 10px; font-size: .95rem; }
+  .card h3 { font-family: "Space Grotesk", sans-serif; font-size: .9rem; margin: 0 0 4px; }
+  .card p { font-size: .8rem; color: var(--ink-soft); margin: 0; }
+
+  /* リンク集 */
+  .links-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (max-width: 560px) { .links-grid { grid-template-columns: 1fr; } }
+  .link-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; text-decoration: none; display: block; }
+  .link-card h4 { font-family: "Space Grotesk", sans-serif; font-size: .92rem; margin: 0 0 4px; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+  .link-card p { font-size: .8rem; color: var(--ink-soft); margin: 0; }
+
+  .final-cta { text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 40px 24px; }
+  .final-cta h2 { margin: 0 0 8px; }
+  .final-cta p { color: var(--ink-soft); margin: 0 0 24px; }
+
+  footer { text-align: center; padding: 40px 24px 56px; color: var(--ink-soft); font-size: .8rem; }
+  footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-top: 10px; }
+  footer a { text-decoration: none; color: var(--ink-soft); }
+
+
+  .icon { width: 16px; height: 16px; flex-shrink: 0; }
+  .btn .icon, .nav-cta .icon { vertical-align: -3px; margin-right: 2px; }
+
+  /* スクロールで出現するアニメーション */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-row">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="gn" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#5EEAD4"/><stop offset="1" stop-color="#818CF8"/>
+        </linearGradient></defs>
+        <polygon points="50,6 90,28 90,72 50,94 10,72 10,28" stroke="url(#gn)" stroke-width="6" fill="none"/>
+        <path d="M38 34 L50 66 L62 34" stroke="url(#gn)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      VexaBot
+    </a>
+    <div class="nav-links">
+      <a href="#activities">できること</a>
+      <a href="#demo">デモ</a>
+      <a href="#links">リンク</a>
+    </div>
+    <a class="nav-cta" href="https://discord.gg/qjmATeVFfq" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4C18.8 4.7 17.2 4.2 15.6 4c-.2.4-.4.8-.6 1.3-1.7-.3-3.4-.3-5.1 0-.1-.5-.3-.9-.6-1.3-1.6.2-3.2.7-4.7 1.4C2 9 1.3 12.5 1.6 16c1.8 1.3 3.5 2.1 5.2 2.6.4-.6.8-1.2 1.1-1.9-.6-.2-1.2-.5-1.7-.9.1-.1.3-.2.4-.3 3.3 1.5 6.9 1.5 10.2 0 .1.1.3.2.4.3-.5.3-1.1.6-1.7.9.3.7.7 1.3 1.1 1.9 1.7-.5 3.4-1.3 5.2-2.6.4-4.1-.7-7.6-2.5-10.6ZM8.7 13.8c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Zm6.6 0c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Z"/></svg> 参加する</a>
+  </div>
+</nav>
+
+<main class="wrap" id="top">
+
+  <section class="hero">
+    <svg class="logo-big" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="gh" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#5EEAD4"/><stop offset="1" stop-color="#818CF8"/>
+      </linearGradient></defs>
+      <polygon points="50,6 90,28 90,72 50,94 10,72 10,28" stroke="url(#gh)" stroke-width="4" fill="none"/>
+      <path d="M38 34 L50 66 L62 34" stroke="url(#gh)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <h1><span class="grad">VexaBot</span><br>サーバーを守り、動かす。</h1>
+    <p class="tag">荒らし対策からAI雑談、娯楽コマンドまで。サーバー運営に必要な機能を1つにまとめた、完全無料のオールインワンDiscord Botです。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1552273300405882970&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> サーバーに追加</a>
+      <a class="btn btn-secondary" href="#demo">▶ 使用例を見る</a>
+    </div>
+  </section>
+
+  <section class="block" id="activities">
+    <p class="eyebrow reveal">Our Capabilities</p>
+    <h2 class="reveal">できること</h2>
+    <div class="activities">
+      <div class="activity-card reveal">
+        <span class="ico">🛡️</span>
+        <h3>荒らし対策の自動運用</h3>
+        <p>レイド・チャンネル大量作成・無断Bot追加を検知し、通知から処罰まで自動で対応します。</p>
+        <a class="link" href="#demo">仕組みを見る →</a>
+      </div>
+      <div class="activity-card reveal">
+        <span class="ico">💬</span>
+        <h3>AI雑談チャンネル</h3>
+        <p>指定したチャンネルで話しかけると、文脈をくみながらAIが返信。雑談相手として使えます。</p>
+        <a class="link" href="#demo">会話例を見る →</a>
+      </div>
+      <div class="activity-card reveal">
+        <span class="ico">🎉</span>
+        <h3>娯楽・実用コマンド</h3>
+        <p>サイコロからQRコード生成、翻訳、天気予報まで。90を超えるコマンドをいつでも呼び出せます。</p>
+        <a class="link" href="#links">コマンド一覧へ →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="demo">
+    <p class="eyebrow reveal">Featured</p>
+    <h2 class="reveal">使ってみるとこんな感じ</h2>
+    <div class="demo reveal">
+      <div class="msg user reveal">
+        <div class="bubble"><div class="name">あなた</div>/server_stats</div>
+      </div>
+      <div class="msg reveal">
+        <div class="bubble"><div class="name">VexaBot</div>📊 サーバー統計 — メンバー312人 / オンライン88人 / ロール24個</div>
+      </div>
+      <div class="msg user reveal">
+        <div class="bubble"><div class="name">あなた</div>変なチャンネルが大量に作られてる!</div>
+      </div>
+      <div class="msg reveal">
+        <div class="bubble"><div class="name">VexaBot</div>🚨 大量作成を検知。実行者をBANし、作られたチャンネルを自動削除しました。処罰ログに記録済み。</div>
+      </div>
+      <div class="msg user reveal">
+        <div class="bubble"><div class="name">あなた</div>/omikuji</div>
+      </div>
+      <div class="msg reveal">
+        <div class="bubble"><div class="name">VexaBot</div>⚡大大吉 — とんでもなくいい1日になりそう!</div>
+      </div>
+    </div>
+
+    <ul class="checklist reveal">
+      <li>完全無料 — 永続的に利用可能</li>
+      <li>荒らし検知から処罰まで全自動</li>
+      <li>90以上のコマンドを標準搭載</li>
+      <li>導入はワンクリックの招待のみ</li>
+      <li>全設定はサーバーごとに個別管理</li>
+      <li>コマンド一覧は /help でいつでも確認</li>
+    </ul>
+  </section>
+
+  <section class="block" id="features">
+    <p class="eyebrow reveal">All Features</p>
+    <h2 class="reveal">機能カテゴリ一覧</h2>
+    <div class="grid">
+      <div class="card reveal"><div class="dot">🛡️</div><h3>荒らし対策</h3><p>レイド・大量作成・Bot追加の自動検知</p></div>
+      <div class="card reveal"><div class="dot">🤖</div><h3>Bot対策</h3><p>迷惑Botの連投・リンクを自動ブロック</p></div>
+      <div class="card reveal"><div class="dot">🔨</div><h3>モデレーション</h3><p>警告・キック・BAN・タイムアウト</p></div>
+      <div class="card reveal"><div class="dot">🚫</div><h3>NG/リンクフィルター</h3><p>指定ワード・未許可リンクを自動削除</p></div>
+      <div class="card reveal"><div class="dot">💬</div><h3>AI雑談</h3><p>文脈をくみながら返信するAI会話</p></div>
+      <div class="card reveal"><div class="dot">👋</div><h3>歓迎・自動ロール</h3><p>入室時の歓迎メッセージとロール付与</p></div>
+      <div class="card reveal"><div class="dot">✅</div><h3>認証パネル</h3><p>ボタン/リアクションで認証</p></div>
+      <div class="card reveal"><div class="dot">🎫</div><h3>チケット</h3><p>個別相談用チャンネルの自動作成</p></div>
+      <div class="card reveal"><div class="dot">📌</div><h3>固定メッセージ</h3><p>チャンネル最下部への案内表示</p></div>
+      <div class="card reveal"><div class="dot">🎉</div><h3>娯楽コマンド</h3><p>サイコロ・おみくじ・しりとり等20+</p></div>
+      <div class="card reveal"><div class="dot">🧰</div><h3>実用ツール</h3><p>翻訳・天気・計算・QR・辞書</p></div>
+      <div class="card reveal"><div class="dot">📊</div><h3>統計・レベル</h3><p>XPレベルとサーバー統計</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="links">
+    <p class="eyebrow reveal">Connect</p>
+    <h2 class="reveal">リンク集</h2>
+    <div class="links-grid">
+      <a class="link-card reveal" href="https://discord.gg/qjmATeVFfq" target="_blank" rel="noopener">
+        <h4><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4C18.8 4.7 17.2 4.2 15.6 4c-.2.4-.4.8-.6 1.3-1.7-.3-3.4-.3-5.1 0-.1-.5-.3-.9-.6-1.3-1.6.2-3.2.7-4.7 1.4C2 9 1.3 12.5 1.6 16c1.8 1.3 3.5 2.1 5.2 2.6.4-.6.8-1.2 1.1-1.9-.6-.2-1.2-.5-1.7-.9.1-.1.3-.2.4-.3 3.3 1.5 6.9 1.5 10.2 0 .1.1.3.2.4.3-.5.3-1.1.6-1.7.9.3.7.7 1.3 1.1 1.9 1.7-.5 3.4-1.3 5.2-2.6.4-4.1-.7-7.6-2.5-10.6ZM8.7 13.8c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Zm6.6 0c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Z"/></svg> Discordコミュニティ</h4>
+        <p>開発・運営の話をしているサーバーに参加</p>
+      </a>
+      <a class="link-card reveal" href="https://discord.com/oauth2/authorize?client_id=1552273300405882970&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" rel="noopener">
+        <h4><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> VexaBotを招待</h4>
+        <p>自分のサーバーに今すぐ導入</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="final-cta reveal">
+      <h2>今すぐ導入しよう</h2>
+      <p>設定は不要、招待するだけですぐに使えます。</p>
+      <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1552273300405882970&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> サーバーに追加</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>VexaBot</div>
+  <div class="foot-links">
+    <a href="https://discord.gg/qjmATeVFfq" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4C18.8 4.7 17.2 4.2 15.6 4c-.2.4-.4.8-.6 1.3-1.7-.3-3.4-.3-5.1 0-.1-.5-.3-.9-.6-1.3-1.6.2-3.2.7-4.7 1.4C2 9 1.3 12.5 1.6 16c1.8 1.3 3.5 2.1 5.2 2.6.4-.6.8-1.2 1.1-1.9-.6-.2-1.2-.5-1.7-.9.1-.1.3-.2.4-.3 3.3 1.5 6.9 1.5 10.2 0 .1.1.3.2.4.3-.5.3-1.1.6-1.7.9.3.7.7 1.3 1.1 1.9 1.7-.5 3.4-1.3 5.2-2.6.4-4.1-.7-7.6-2.5-10.6ZM8.7 13.8c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Zm6.6 0c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2 1.7.9 1.7 2-.8 2-1.7 2Z"/></svg> Discord</a>
+    <a href="#top">トップへ戻る</a>
+  </div>
+</footer>
+
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('is-visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
